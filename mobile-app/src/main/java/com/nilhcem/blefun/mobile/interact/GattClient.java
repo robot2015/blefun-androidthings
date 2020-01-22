@@ -24,7 +24,7 @@ import static com.nilhcem.blefun.common.AwesomenessProfile.CHARACTERISTIC_INTERA
 import static com.nilhcem.blefun.common.AwesomenessProfile.DESCRIPTOR_CONFIG;
 import static com.nilhcem.blefun.common.AwesomenessProfile.SERVICE_UUID;
 
-public class GattClient {
+class GattClient {
 
     private static final String TAG = GattClient.class.getSimpleName();
 
@@ -123,7 +123,7 @@ public class GattClient {
         }
     };
 
-    public void onCreate(Context context, String deviceAddress, OnCounterReadListener listener) throws RuntimeException {
+    void onCreate(Context context, String deviceAddress, OnCounterReadListener listener) throws RuntimeException {
         mContext = context;
         mListener = listener;
         mDeviceAddress = deviceAddress;
@@ -146,7 +146,7 @@ public class GattClient {
         }
     }
 
-    public void onDestroy() {
+    void onDestroy() {
         mListener = null;
 
         BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
@@ -157,7 +157,7 @@ public class GattClient {
         mContext.unregisterReceiver(mBluetoothReceiver);
     }
 
-    public void writeInteractor() {
+    void writeInteractor() {
         BluetoothGattCharacteristic interactor = mBluetoothGatt
                 .getService(SERVICE_UUID)
                 .getCharacteristic(CHARACTERISTIC_INTERACTOR_UUID);
@@ -185,7 +185,6 @@ public class GattClient {
 
         if (mBluetoothGatt == null) {
             Log.w(TAG, "Unable to create GATT client");
-            return;
         }
     }
 

@@ -7,7 +7,7 @@ import com.nilhcem.ledcontrol.LedControl;
 
 import java.io.IOException;
 
-public class LuckyCat {
+class LuckyCat {
 
     private static final String TAG = LuckyCat.class.getSimpleName();
     private static final String SERVO_PWM = "PWM0";
@@ -16,7 +16,7 @@ public class LuckyCat {
     private Servo mServo;
     private LedControl mLedControl;
 
-    public void onCreate() {
+    void onCreate() {
         try {
             mServo = new Servo(SERVO_PWM);
             mServo.setPulseDurationRange(0.6, 2.4);
@@ -30,7 +30,7 @@ public class LuckyCat {
         }
     }
 
-    public void movePaw() {
+    void movePaw() {
         try {
             mServo.setAngle(mServo.getMaximumAngle());
             Thread.sleep(1000);
@@ -42,7 +42,7 @@ public class LuckyCat {
         }
     }
 
-    public void updateCounter(int counter) {
+    void updateCounter(int counter) {
         int curValue = counter;
         for (int i = 0; i < 8; i++) {
             byte value = (byte) ((i != 0 && curValue == 0) ? 16 : (curValue % 10));
@@ -55,7 +55,7 @@ public class LuckyCat {
         }
     }
 
-    public void onDestroy() {
+    void onDestroy() {
         try {
             if (mServo != null) {
                 mServo.close();

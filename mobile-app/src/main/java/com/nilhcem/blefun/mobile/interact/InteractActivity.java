@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import com.nilhcem.blefun.mobile.R;
 
+import java.text.DecimalFormat;
+
 public class InteractActivity extends AppCompatActivity {
 
     public static final String EXTRA_DEVICE_ADDRESS = "mAddress";
@@ -36,7 +38,8 @@ public class InteractActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mButton.setText(Integer.toString(value));
+                        DecimalFormat df = new DecimalFormat("#");
+                        mButton.setText(df.format(value));
                     }
                 });
             }

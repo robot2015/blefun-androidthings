@@ -35,7 +35,7 @@ import static com.nilhcem.blefun.common.AwesomenessProfile.DESCRIPTOR_CONFIG;
 import static com.nilhcem.blefun.common.AwesomenessProfile.DESCRIPTOR_USER_DESC;
 import static com.nilhcem.blefun.common.AwesomenessProfile.SERVICE_UUID;
 
-public class GattServer {
+class GattServer {
 
     private static final String TAG = GattServer.class.getSimpleName();
 
@@ -178,7 +178,7 @@ public class GattServer {
         }
     };
 
-    public void onCreate(Context context, GattServerListener listener) throws RuntimeException {
+    void onCreate(Context context, GattServerListener listener) throws RuntimeException {
         mContext = context;
         mListener = listener;
 
@@ -201,7 +201,7 @@ public class GattServer {
         }
     }
 
-    public void onDestroy() {
+    void onDestroy() {
         BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
         if (bluetoothAdapter.isEnabled()) {
             stopServer();
