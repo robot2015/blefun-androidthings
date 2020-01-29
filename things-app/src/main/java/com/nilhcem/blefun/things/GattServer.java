@@ -62,6 +62,7 @@ class GattServer {
     private final BroadcastReceiver mBluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.v(TAG, "mBluetoothReceiver");
             int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
 
             switch (state) {
@@ -83,11 +84,13 @@ class GattServer {
     private AdvertiseCallback mAdvertiseCallback = new AdvertiseCallback() {
         @Override
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+            Log.v(TAG, "onStartSuccess");
             Log.i(TAG, "LE Advertise Started.");
         }
 
         @Override
         public void onStartFailure(int errorCode) {
+            Log.v(TAG, "onStartFailure");
             Log.w(TAG, "LE Advertise Failed: " + errorCode);
         }
     };
@@ -95,6 +98,7 @@ class GattServer {
     private BluetoothGattServerCallback mGattServerCallback = new BluetoothGattServerCallback() {
         @Override
         public void onConnectionStateChange(BluetoothDevice device, int status, int newState) {
+            Log.v(TAG, "onConnectionStateChange");
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.i(TAG, "BluetoothDevice CONNECTED: " + device);
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
@@ -106,6 +110,7 @@ class GattServer {
 
         @Override
         public void onCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattCharacteristic characteristic) {
+            Log.v(TAG, "onCharacteristicReadRequest");
             if (CHARACTERISTIC_COUNTER_UUID.equals(characteristic.getUuid())) {
                 Log.i(TAG, "Read counter");
                 byte[] value = mListener.onCounterRead();
@@ -119,6 +124,7 @@ class GattServer {
 
         @Override
         public void onCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
+            Log.v(TAG, "onCharacteristicWriteRequest");
             if (CHARACTERISTIC_INTERACTOR_UUID.equals(characteristic.getUuid())) {
                 Log.i(TAG, "Write interactor");
 
@@ -135,6 +141,7 @@ class GattServer {
 
         @Override
         public void onDescriptorReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattDescriptor descriptor) {
+            Log.v(TAG, "onDescriptorReadRequest");
             if (DESCRIPTOR_CONFIG.equals(descriptor.getUuid())) {
                 Log.d(TAG, "Config descriptor read request");
                 byte[] returnValue;
@@ -157,6 +164,7 @@ class GattServer {
 
         @Override
         public void onDescriptorWriteRequest(BluetoothDevice device, int requestId, BluetoothGattDescriptor descriptor, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
+            Log.v(TAG, "onDescriptorWriteRequest");
             if (DESCRIPTOR_CONFIG.equals(descriptor.getUuid())) {
                 if (Arrays.equals(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE, value)) {
                     Log.d(TAG, "Subscribe device to notifications: " + device);
@@ -179,6 +187,7 @@ class GattServer {
     };
 
     void onCreate(Context context, GattServerListener listener) throws RuntimeException {
+        Log.v(TAG, "onCreate");
         mContext = context;
         mListener = listener;
 
@@ -202,6 +211,7 @@ class GattServer {
     }
 
     void onDestroy() {
+        Log.v(TAG, "onDestroy");
         BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
         if (bluetoothAdapter.isEnabled()) {
             stopServer();
@@ -213,6 +223,7 @@ class GattServer {
     }
 
     private boolean checkBluetoothSupport(BluetoothAdapter bluetoothAdapter) {
+        Log.v(TAG, "checkBluetoothSupport");
         if (bluetoothAdapter == null) {
             Log.w(TAG, "Bluetooth is not supported");
             return false;
@@ -227,6 +238,7 @@ class GattServer {
     }
 
     private void startAdvertising() {
+        Log.v(TAG, "startAdvertising");
         BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
         mBluetoothLeAdvertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
         if (mBluetoothLeAdvertiser == null) {
@@ -252,6 +264,7 @@ class GattServer {
     }
 
     private void stopAdvertising() {
+        Log.v(TAG, "stopAdvertising");
         if (mBluetoothLeAdvertiser == null) {
             return;
         }
@@ -259,6 +272,7 @@ class GattServer {
     }
 
     private void startServer() {
+        Log.v(TAG, "startServer");
         mBluetoothGattServer = mBluetoothManager.openGattServer(mContext, mGattServerCallback);
         if (mBluetoothGattServer == null) {
             Log.w(TAG, "Unable to create GATT server");
@@ -269,6 +283,7 @@ class GattServer {
     }
 
     private void stopServer() {
+        Log.v(TAG, "stopServer");
         if (mBluetoothGattServer == null) {
             return;
         }
@@ -276,6 +291,7 @@ class GattServer {
     }
 
     private BluetoothGattService createAwesomenessService() {
+        Log.v(TAG, "createAwesomenessService");
         BluetoothGattService service = new BluetoothGattService(SERVICE_UUID, BluetoothGattService.SERVICE_TYPE_PRIMARY);
 
         // Counter characteristic (read-only, supports notifications)
@@ -300,6 +316,7 @@ class GattServer {
     }
 
     private void notifyRegisteredDevices() {
+        Log.v(TAG, "notifyRegisteredDevices");
         if (mRegisteredDevices.isEmpty()) {
             Log.i(TAG, "No subscribers registered");
             return;

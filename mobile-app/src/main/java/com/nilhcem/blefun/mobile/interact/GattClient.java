@@ -44,6 +44,10 @@ class GattClient {
     private BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            Log.v(TAG, "onConnectionStateChange");
+            Log.v(TAG, "gatt = " + gatt);
+            Log.v(TAG, "status = " + status);
+            Log.v(TAG, "newState = " + newState);
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.i(TAG, "Connected to GATT client. Attempting to start service discovery");
                 gatt.discoverServices();
@@ -55,6 +59,7 @@ class GattClient {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            Log.v(TAG, "onServicesDiscovered");
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 boolean connected = false;
 
@@ -79,16 +84,19 @@ class GattClient {
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Log.v(TAG, "onCharacteristicRead");
             readCounterCharacteristic(characteristic);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            Log.v(TAG, "onCharacteristicChanged");
             readCounterCharacteristic(characteristic);
         }
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+            Log.v(TAG, "onDescriptorWrite");
             if (DESCRIPTOR_CONFIG.equals(descriptor.getUuid())) {
                 BluetoothGattCharacteristic characteristic = gatt.getService(SERVICE_UUID).getCharacteristic(CHARACTERISTIC_COUNTER_UUID);
                 gatt.readCharacteristic(characteristic);
@@ -96,6 +104,7 @@ class GattClient {
         }
 
         private void readCounterCharacteristic(BluetoothGattCharacteristic characteristic) {
+            Log.v(TAG, "readCounterCharacteristic");
             if (CHARACTERISTIC_COUNTER_UUID.equals(characteristic.getUuid())) {
                 byte[] data = characteristic.getValue();
                 int value = Ints.fromByteArray(data);
@@ -107,6 +116,7 @@ class GattClient {
     private final BroadcastReceiver mBluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.v(TAG, "mBluetoothReceiver");
             int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
 
             switch (state) {
@@ -124,6 +134,7 @@ class GattClient {
     };
 
     void onCreate(Context context, String deviceAddress, OnCounterReadListener listener) throws RuntimeException {
+        Log.v(TAG, "onCreate");
         mContext = context;
         mListener = listener;
         mDeviceAddress = deviceAddress;
@@ -147,6 +158,7 @@ class GattClient {
     }
 
     void onDestroy() {
+        Log.v(TAG, "onDestroy");
         mListener = null;
 
         BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
@@ -158,6 +170,7 @@ class GattClient {
     }
 
     void writeInteractor() {
+        Log.v(TAG, "writeInteractor");
         BluetoothGattCharacteristic interactor = mBluetoothGatt
                 .getService(SERVICE_UUID)
                 .getCharacteristic(CHARACTERISTIC_INTERACTOR_UUID);
@@ -166,6 +179,7 @@ class GattClient {
     }
 
     private boolean checkBluetoothSupport(BluetoothAdapter bluetoothAdapter) {
+        Log.v(TAG, "checkBluetoothSupport");
         if (bluetoothAdapter == null) {
             Log.w(TAG, "Bluetooth is not supported");
             return false;
@@ -176,10 +190,12 @@ class GattClient {
             return false;
         }
 
+        Log.v(TAG, "checkBluetoothSupport = true");
         return true;
     }
 
     private void startClient() {
+        Log.v(TAG, "startClient");
         BluetoothDevice bluetoothDevice = mBluetoothAdapter.getRemoteDevice(mDeviceAddress);
         mBluetoothGatt = bluetoothDevice.connectGatt(mContext, false, mGattCallback);
 
@@ -189,6 +205,7 @@ class GattClient {
     }
 
     private void stopClient() {
+        Log.v(TAG, "stopClient");
         if (mBluetoothGatt != null) {
             mBluetoothGatt.close();
             mBluetoothGatt = null;

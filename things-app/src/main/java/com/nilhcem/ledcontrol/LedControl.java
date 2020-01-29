@@ -2,6 +2,7 @@ package com.nilhcem.ledcontrol;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 
 import com.google.android.things.pio.PeripheralManager;
 import com.google.android.things.pio.SpiDevice;
@@ -12,6 +13,8 @@ import java.io.IOException;
  * Simplified port of Arduino's LedControl library
  */
 public class LedControl implements AutoCloseable {
+
+    private static final String TAG = LedControl.class.getSimpleName();
 
     //the opcodes for the MAX7221 and MAX7219
     private static final byte OP_NOOP = 0;
@@ -61,6 +64,7 @@ public class LedControl implements AutoCloseable {
     private byte[] status = new byte[8];
 
     public LedControl(String spiGpio) throws IOException {
+        Log.v(TAG, "LedControl");
         PeripheralManager manager = PeripheralManager.getInstance();
         spiDevice = manager.openSpiDevice(spiGpio);
         spiDevice.setMode(SpiDevice.MODE0);
@@ -79,6 +83,7 @@ public class LedControl implements AutoCloseable {
 
     @Override
     public void close() throws IOException {
+        Log.v(TAG, "close");
         try {
             spiDevice.close();
         } finally {
@@ -92,6 +97,7 @@ public class LedControl implements AutoCloseable {
      * @param status if true the device goes into power-down mode. Set to false for normal operation.
      */
     public void shutdown(boolean status) throws IOException {
+        Log.v(TAG, "shutdown");
         spiTransfer(OP_SHUTDOWN, status ? 0 : 1);
     }
 
@@ -104,6 +110,7 @@ public class LedControl implements AutoCloseable {
      * @param limit number of digits to be displayed (1..8)
      */
     public void setScanLimit(int limit) throws IOException {
+        Log.v(TAG, "setScanLimit");
         if (limit >= 0 || limit < 8) {
             spiTransfer(OP_SCANLIMIT, limit);
         }
@@ -115,6 +122,7 @@ public class LedControl implements AutoCloseable {
      * @param intensity the brightness of the display. (0..15)
      */
     public void setIntensity(int intensity) throws IOException {
+        Log.v(TAG, "setIntensity");
         if (intensity >= 0 || intensity < 16) {
             spiTransfer(OP_INTENSITY, intensity);
         }
@@ -124,6 +132,7 @@ public class LedControl implements AutoCloseable {
      * Switch all Leds on the display off
      */
     public void clearDisplay() throws IOException {
+        Log.v(TAG, "clearDisplay");
         for (int i = 0; i < 8; i++) {
             status[i] = 0;
             spiTransfer((byte) (i + 1), status[i]);
@@ -139,6 +148,7 @@ public class LedControl implements AutoCloseable {
      * @throws IOException
      */
     public void setLed(int row, int col, boolean state) throws IOException {
+        Log.v(TAG, "setLed");
         byte val;
 
         if (row < 0 || row > 7 || col < 0 || col > 7) {
@@ -161,6 +171,7 @@ public class LedControl implements AutoCloseable {
      * @param value each bit set to 1 will light up the corresponding Led.
      */
     public void setRow(int row, byte value) throws IOException {
+        Log.v(TAG, "setRow");
         if (row < 0 || row > 7) {
             return;
         }
@@ -176,6 +187,7 @@ public class LedControl implements AutoCloseable {
      * @param value each bit set to 1 will light up the corresponding Led.
      */
     public void setColumn(int col, byte value) throws IOException {
+        Log.v(TAG, "setColumn");
         byte val;
 
         if (col < 0 || col > 7) {
@@ -195,6 +207,8 @@ public class LedControl implements AutoCloseable {
      * @param dp    sets the decimal point.
      */
     public void setDigit(int digit, byte value, boolean dp) throws IOException {
+        Log.v(TAG, "setDigit");
+        Log.v(TAG, "Set digit = " + digit);
         byte v;
 
         if (digit < 0 || digit > 7 || value > 16) {
@@ -222,6 +236,7 @@ public class LedControl implements AutoCloseable {
      * @param dp    sets the decimal point.
      */
     public void setChar(int digit, char value, boolean dp) throws IOException {
+        Log.v(TAG, "setChar");
         byte index;
         byte v;
 
@@ -244,6 +259,7 @@ public class LedControl implements AutoCloseable {
      * @throws IOException
      */
     public void draw(Bitmap bitmap) throws IOException {
+        Log.v(TAG, "draw");
         Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 8, 8, true);
         for (int row = 0; row < 8; row++) {
             int value = 0;
@@ -258,6 +274,7 @@ public class LedControl implements AutoCloseable {
      * Send out a single command to the device
      */
     private void spiTransfer(byte opcode, int data) throws IOException {
+        Log.v(TAG, "spiTransfer");
         spidata[0] = opcode;
         spidata[1] = (byte) data;
         spiDevice.write(spidata, 2);

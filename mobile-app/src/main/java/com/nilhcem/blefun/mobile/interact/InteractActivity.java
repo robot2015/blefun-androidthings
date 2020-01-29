@@ -3,6 +3,8 @@ package com.nilhcem.blefun.mobile.interact;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -13,6 +15,7 @@ import java.text.DecimalFormat;
 
 public class InteractActivity extends AppCompatActivity {
 
+    private static final String TAG = InteractActivity.class.getSimpleName();
     public static final String EXTRA_DEVICE_ADDRESS = "mAddress";
 
     private final GattClient mGattClient = new GattClient();
@@ -20,6 +23,7 @@ public class InteractActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.interact_activity);
         mButton = findViewById(R.id.interact_button);
@@ -35,6 +39,7 @@ public class InteractActivity extends AppCompatActivity {
         mGattClient.onCreate(this, address, new GattClient.OnCounterReadListener() {
             @Override
             public void onCounterRead(final int value) {
+                Log.v(TAG, "onCounterRead");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -46,11 +51,13 @@ public class InteractActivity extends AppCompatActivity {
 
             @Override
             public void onConnected(final boolean success) {
+                Log.v(TAG, "onConnected");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         mButton.setEnabled(success);
                         if (!success) {
+                            Log.v(TAG, "Connection error");
                             Toast.makeText(InteractActivity.this, "Connection error", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -61,6 +68,7 @@ public class InteractActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        Log.v(TAG, "onDestroy");
         super.onDestroy();
         mGattClient.onDestroy();
     }

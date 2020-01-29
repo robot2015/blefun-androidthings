@@ -17,6 +17,7 @@ class LuckyCat {
     private LedControl mLedControl;
 
     void onCreate() {
+        Log.v(TAG, "onCreate");
         try {
             mServo = new Servo(SERVO_PWM);
             mServo.setPulseDurationRange(0.6, 2.4);
@@ -31,6 +32,7 @@ class LuckyCat {
     }
 
     void movePaw() {
+        Log.v(TAG, "movePaw");
         try {
             mServo.setAngle(mServo.getMaximumAngle());
             Thread.sleep(1000);
@@ -43,11 +45,14 @@ class LuckyCat {
     }
 
     void updateCounter(int counter) {
+        Log.v(TAG, "updateCounter");
+        Log.v(TAG, "Counter value = " + counter);
         int curValue = counter;
         for (int i = 0; i < 8; i++) {
             byte value = (byte) ((i != 0 && curValue == 0) ? 16 : (curValue % 10));
             try {
                 mLedControl.setDigit(i, value, false);
+                Log.v(TAG, "Set digit = " + i);
             } catch (IOException e) {
                 Log.e(TAG, "Error setting counter", e);
             }
@@ -56,6 +61,7 @@ class LuckyCat {
     }
 
     void onDestroy() {
+        Log.v(TAG, "onDestroy");
         try {
             if (mServo != null) {
                 mServo.close();

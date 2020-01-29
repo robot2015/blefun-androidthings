@@ -55,12 +55,14 @@ public class ScanActivity extends AppCompatActivity {
     private final ScanCallback mScanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
+            Log.v(TAG, "onScanResult");
             // We scan with report delay > 0. This will never be called.
             Log.i(TAG, "onScanResult: " + result.getDevice().getAddress());
         }
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
+            Log.v(TAG, "onBatchScanResults");
             Log.i(TAG, "onBatchScanResults: " + results.toString());
 
             if (!results.isEmpty()) {
@@ -71,6 +73,7 @@ public class ScanActivity extends AppCompatActivity {
 
         @Override
         public void onScanFailed(int errorCode) {
+            Log.v(TAG, "onScanFailed");
             Log.w(TAG, "Scan failed: " + errorCode);
             stopLeScan();
         }
@@ -78,18 +81,22 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scan_activity);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.v(TAG, "onCreateOptionsMenu");
         getMenuInflater().inflate(R.menu.scan, menu);
         if (!mScanning) {
+            Log.v(TAG, "!mScanning = true");
             menu.findItem(R.id.menu_stop).setVisible(false);
             menu.findItem(R.id.menu_scan).setVisible(true);
             menu.findItem(R.id.menu_refresh).setActionView(null);
         } else {
+            Log.v(TAG, "!mScanning = false");
             menu.findItem(R.id.menu_stop).setVisible(true);
             menu.findItem(R.id.menu_scan).setVisible(false);
             menu.findItem(R.id.menu_refresh).setActionView(R.layout.scan_indeterminate_progress);
@@ -99,6 +106,7 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.v(TAG, "onOptionsItemSelected");
         switch (item.getItemId()) {
             case R.id.menu_scan:
                 startLeScan();
@@ -112,6 +120,7 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.v(TAG, "onActivityResult");
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(this, "You must turn Bluetooth on, to use this app", Toast.LENGTH_LONG).show();
             finish();
@@ -122,6 +131,7 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.v(TAG, "onRequestPermissionsResult");
         if (requestCode == REQUEST_PERMISSION_LOCATION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.i(TAG, "Permission accepted");
         } else {
@@ -132,17 +142,20 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Log.v(TAG, "onResume");
         super.onResume();
         prepareForScan();
     }
 
     @Override
     protected void onPause() {
+        Log.v(TAG, "onPause");
         super.onPause();
         stopLeScan();
     }
 
     private void prepareForScan() {
+        Log.v(TAG, "prepareForScan");
         if (isBleSupported()) {
             // Ensures Bluetooth is enabled on the device
             BluetoothManager btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -165,10 +178,12 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     private boolean isBleSupported() {
+        Log.v(TAG, "isBleSupported");
         return getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
     }
 
     private void startLeScan() {
+        Log.v(TAG, "startLeScan");
         mScanning = true;
 
         ScanSettings settings = new ScanSettings.Builder()
@@ -186,6 +201,7 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     private void stopLeScan() {
+        Log.v(TAG, "stopLeScan");
         if (mScanning) {
             mScanning = false;
 
@@ -197,6 +213,7 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     private void startInteractActivity(BluetoothDevice device) {
+        Log.v(TAG, "startInteractActivity");
         Intent intent = new Intent(this, InteractActivity.class);
         intent.putExtra(InteractActivity.EXTRA_DEVICE_ADDRESS, device.getAddress());
         startActivity(intent);

@@ -5,6 +5,8 @@ import java.util.UUID;
 
 public class AwesomenessProfile {
 
+    private static final String TAG = AwesomenessProfile.class.getSimpleName();
+
     // UUID for the UART BTLE client characteristic which is necessary for notifications.
     public static UUID DESCRIPTOR_CONFIG = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     public static UUID DESCRIPTOR_USER_DESC = UUID.fromString("00002901-0000-1000-8000-00805f9b34fb");
