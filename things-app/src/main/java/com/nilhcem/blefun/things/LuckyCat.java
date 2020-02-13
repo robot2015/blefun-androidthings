@@ -2,8 +2,10 @@ package com.nilhcem.blefun.things;
 
 import android.util.Log;
 
+import com.google.android.things.contrib.driver.ht16k33.AlphanumericDisplay;
+import com.google.android.things.contrib.driver.ht16k33.Ht16k33;
 import com.google.android.things.contrib.driver.pwmservo.Servo;
-import com.nilhcem.ledcontrol.LedControl;
+import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
 
 import java.io.IOException;
 
@@ -14,7 +16,7 @@ class LuckyCat {
     private static final String DIGITS_SPI = "SPI0.0";
 
     private Servo mServo;
-    private LedControl mLedControl;
+    private AlphanumericDisplay segment;
 
     void onCreate() {
         Log.v(TAG, "onCreate");
@@ -24,8 +26,8 @@ class LuckyCat {
             mServo.setAngleRange(-90, 90);
             mServo.setEnabled(true);
 
-            mLedControl = new LedControl(DIGITS_SPI);
-            mLedControl.setIntensity(4);
+            segment = RainbowHat.openDisplay();
+            segment.setBrightness(Ht16k33.HT16K33_BRIGHTNESS_MAX);
         } catch (IOException e) {
             Log.e(TAG, "Error initializing lucky cat", e);
         }
@@ -47,16 +49,11 @@ class LuckyCat {
     void updateCounter(int counter) {
         Log.v(TAG, "updateCounter");
         Log.v(TAG, "Counter value = " + counter);
-        int curValue = counter;
-        for (int i = 0; i < 8; i++) {
-            byte value = (byte) ((i != 0 && curValue == 0) ? 16 : (curValue % 10));
-            try {
-                mLedControl.setDigit(i, value, false);
-                Log.v(TAG, "Set digit = " + i);
-            } catch (IOException e) {
-                Log.e(TAG, "Error setting counter", e);
-            }
-            curValue /= 10;
+        try {
+            segment.display(counter);
+            // segment.clear();
+        } catch (IOException io) {
+            io.printStackTrace();
         }
     }
 
@@ -66,14 +63,14 @@ class LuckyCat {
             if (mServo != null) {
                 mServo.close();
             }
-            if (mLedControl != null) {
-                mLedControl.close();
+            if (segment != null) {
+                segment.close();
             }
         } catch (IOException e) {
             Log.e(TAG, "Error closing lucky cat resources", e);
         } finally {
             mServo = null;
-            mLedControl = null;
+            segment = null;
         }
     }
 }
