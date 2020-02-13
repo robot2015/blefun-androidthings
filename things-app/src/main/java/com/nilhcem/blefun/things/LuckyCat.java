@@ -50,8 +50,8 @@ class LuckyCat {
         Log.v(TAG, "updateCounter");
         Log.v(TAG, "Counter value = " + counter);
         try {
-            segment.display(counter);
-            // segment.clear();
+            // segment.display(counter);
+            segment.clear();
         } catch (IOException io) {
             io.printStackTrace();
         }
